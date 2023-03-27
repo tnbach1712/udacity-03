@@ -230,54 +230,67 @@ jobs:
       - destroy-environment
   #     # Here's where you will add some code to rollback on failure      
 
-  # run-migrations:
-  #   docker:
-  #    - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout 
-  #     - run:
-  #         name: Run migrations
-  #         command: |
-  #           cd backend
-  #           npm install
-  #           # Run and save the migration output
-  #           npm run migrations > migrations_dump.txt
-  #           exit 0
-  #     - run:
-  #         name: Send migration results to memstash
-  #         command: |
-      # - run:
-      #   name: Send migration status to kvdb.io OR memstash.io
-      #   command: |   
-      #     if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
-      #     then
-      #           # If you are using memstash.io, generate the token "7933fe63-4687-4fa1-8426-aa25aa1730ec" on the website
-      #       curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
-      #       # If you are using kvdb.io, generate the bucket ID "9GE4jRtKznmVKRfvdBABBe" in your local terminal first
-      #       curl https://kvdb.io/9GE4jRtKznmVKRfvdBABBe/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
-      #       fi
-  #    # Here's where you will add some code to rollback on failure      
+  run-migrations:
+    docker:
+     - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - backend-build
+      - run:
+          name: Run migrations
+          command: |
+            cd backend
+            npm install
+            # Run and save the migration output
+            npm run migrations > migrations_dump.txt
+      - run:
+          name: Send migration status to kvdb.io OR memstash.io
+          command: |   
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            then
+            curl https://kvdb.io/AB2eV6LxdQChzLbkwwqQDz/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+            fi
 
-  # deploy-frontend:
-  #   docker:
-  #     # Docker image here that supports AWS CLI
-  #   steps:
-  #     # Checkout code from git
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # your code here
-  #     - run:
-  #         name: Get backend url
-  #         command: |
-  #           # your code here
-  #           export API_URL="http://${BACKEND_IP}:3030"
-  #           echo "${API_URL}"
-  #     - run:
-  #         name: Deploy frontend objects
-  #         command: |
-  #           # your code here
+  deploy-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+      # - image: amazon/aws-cli
+    steps:
+      - checkout
+      - jq/install
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
+      - attach_workspace:
+          at: /
+      - aws-cli/setup:
+          profile-name: default
+      - run:
+          name: Install dependencies
+          command: |
+            # your code here
+      - run:
+          name: Get backend url
+          command: |
+            # your code here
+            STACKID=${CIRCLE_WORKFLOW_ID:0:7}
+            Ec2PublicIP=$(aws ec2 describe-instances --filter Name=tag:Name,Values=backend-$STACKID | jq -r ".Reservations[0].Instances[0].PublicIpAddress")
+            export API_URL="http://${Ec2PublicIP}:3030" >> frontend/.env
+            echo "${API_URL}"
+            cat frontend/.env
+      - run:
+          name: Build and Deploy front-end
+          command: |
+            cd ./frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive            
   #     # Here's where you will add some code to rollback on failure      
+  
                     
   # deploy-backend:
   #   docker:
@@ -360,18 +373,18 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      #     context:
-      #       - slack-secrets
-      # - scan-frontend:
-      #     requires: [build-frontend]
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+          context:
+            - slack-secrets
+      - scan-frontend:
+          requires: [build-frontend]
       - deploy-infrastructure:
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [main]
