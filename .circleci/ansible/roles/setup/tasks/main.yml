@@ -1,0 +1,58 @@
+
+# - name: update apt package
+#   become: yes
+#   apt:
+#     update_cache: yes
+
+# - name: "upgrade packages"
+#   become: yes
+#   apt:
+#     upgrade: yes
+
+- name: "install python for Ansible."
+  become: yes
+  apt:
+    name: ["python3", "pip"]
+    state: latest
+    update_cache: yes
+
+- name: Install nvm
+  become: no
+  ansible.builtin.shell: >
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh | bash
+  args:
+    executable: /bin/bash
+    chdir: "$HOME"
+    creates: "$HOME/.nvm/nvm.sh"
+
+- name: "install Node and Npm for Ansible."
+  become: yes
+  apt:
+    name: ["npm"]
+    state: latest
+    update_cache: yes
+
+- name: Install node
+  become: no
+  shell: >
+    . $HOME/.nvm/nvm.sh && nvm install {{ item }} 
+  args:
+    executable: /bin/bash
+    chdir: $HOME
+    creates: $HOME/.nvm/versions/{{ item }}
+  loop:
+    - 13.8
+
+- name: set Default node 13.8
+  become: no
+  shell: >
+    . $HOME/.nvm/nvm.sh && nvm alias default 13.8 &&  nvm use default
+
+- name: install pm2
+  become: yes
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+  
