@@ -219,6 +219,8 @@ jobs:
             - 2e:5e:38:0c:1c:00:b2:59:95:b5:0c:42:d3:28:e1:fe
       - attach_workspace:
           at: /
+      - aws-cli/setup:
+          profile-name: default
       - run:
           name: Install Ansible
           command: |
@@ -230,8 +232,6 @@ jobs:
             cp /project/.circleci/ansible/inventory.txt inventory.txt
             yes "" | ansible-playbook -i inventory.txt configure-server.yml 2>/dev/null || true
             exit 0
-      - aws-cli/setup:
-          profile-name: default
       - destroy-environment:
           CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}
   #     # Here's where you will add some code to rollback on failure      
@@ -244,6 +244,8 @@ jobs:
       - restore_cache:
           keys:
             - backend-build
+      - aws-cli/setup:
+          profile-name: default
       - run:
           name: Run migrations
           command: |
@@ -258,8 +260,6 @@ jobs:
             then
               curl https://kvdb.io/AB2eV6LxdQChzLbkwwqQDz/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
-      - aws-cli/setup:
-          profile-name: default
       - destroy-environment:
           CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -312,18 +312,22 @@ jobs:
       # Add ssh keys with fingerprint
       # attach workspace
       - checkout
-      - jq/install
       - run:
           name: Install tar utility
           command: |
             yum install -y tar gzip
       - attach_workspace:
           at: /
+      - run:
+          name: Install Ansible
+          command: |
+            apk add --update ansible
       - aws-cli/setup:
           profile-name: default
       - node/install:
-          install-yarn: true
-          node-version: '13.8'       
+          node-version: '13.8'   
+      - aws-cli/setup:
+          profile-name: default    
       - run:
           name: Deploy backend
           command: |
@@ -343,8 +347,6 @@ jobs:
             cp /project/.circleci/ansible/inventory.txt inventory.txt
             yes "" | ansible-playbook -i inventory.txt deploy-backend.yml 2>/dev/null || true
             # your code here
-      - aws-cli/setup:
-          profile-name: default
       - destroy-environment:
           CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}
       # Here's where you will add some code to rollback on failure  
