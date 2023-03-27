@@ -25,12 +25,6 @@
     chdir: "$HOME"
     creates: "$HOME/.nvm/nvm.sh"
 
-- name: Install nvm
-  ansible.builtin.get_url:
-    url:  https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh
-    dest: /etc/foo.conf
-    mode: '0440'
-
 - name: "install Node and Npm for Ansible."
   become: yes
   apt:
@@ -39,19 +33,19 @@
     update_cache: yes
 
 - name: Print NVM version
-  shell: nvm --version
+  ansible.builtin.shell: nvm --version
   args:
     executable: /bin/bash
     chdir: $HOME
 - name: Print NPM version
-  shell: npm --version
+  ansible.builtin.shell: npm --version
   args:
     executable: /bin/bash
     chdir: $HOME
 
 - name: Install node
   become: no
-  shell: >
+  ansible.builtin.shell: >
     . $HOME/.nvm/nvm.sh && nvm install {{ item }} 
   args:
     executable: /bin/bash
@@ -61,7 +55,7 @@
     - 13.8
 
 - name: Print NPM version
-  shell: |
+  ansible.builtin.shell: |
     nvm ls
     node -v
   args:
@@ -70,7 +64,7 @@
 
 - name: set Default node 13.8
   become: no
-  shell: >
+  ansible.builtin.shell: >
     . $HOME/.nvm/nvm.sh && nvm alias default 13.8 &&  nvm use default
   args:
     executable: /bin/bash
