@@ -272,6 +272,7 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
+            echo 123
       - run:
           name: Get backend url
           command: |
@@ -292,22 +293,51 @@ jobs:
   #     # Here's where you will add some code to rollback on failure      
 
                     
-  # deploy-backend:
-  #   docker:
-  #     # Docker image here that supports Ansible
-  #   steps:
-  #     # Checkout code from git
-  #     # Add ssh keys with fingerprint
-  #     # attach workspace
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # your code here
-  #     - run:
-  #         name: Deploy backend
-  #         command: |
-  #           # your code here
-  #     # Here's where you will add some code to rollback on failure  
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      # Add ssh keys with fingerprint
+      # attach workspace
+      - checkout
+      - jq/install
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
+      - attach_workspace:
+          at: /
+      - aws-cli/setup:
+          profile-name: default          
+      - run:
+          name: Install dependencies
+          command: |
+            # your code here
+            echo Install nvm 
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+            source ~/.bashrc
+            echo Install nodejs 13.8
+            nvm install v13.8.0
+            echo version
+            node -v
+            nvm -v
+            npm -v
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+            # your code here
+      # Here's where you will add some code to rollback on failure  
 
   # smoke-test:
   #   docker:
