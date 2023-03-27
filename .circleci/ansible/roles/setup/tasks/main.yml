@@ -33,7 +33,9 @@
     update_cache: yes
 
 - name: Print NVM version
-  ansible.builtin.shell: nvm --version
+  ansible.builtin.shell: |
+    . $HOME/.nvm/nvm.sh
+    nvm --version
   args:
     executable: /bin/bash
     chdir: $HOME
@@ -56,6 +58,7 @@
 
 - name: Print NPM version
   ansible.builtin.shell: |
+    . $HOME/.nvm/nvm.sh
     nvm ls
     node -v
   args:
