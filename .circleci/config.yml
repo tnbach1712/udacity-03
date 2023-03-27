@@ -9,7 +9,8 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
+      CIRCLE_WORKFLOW_ID:
+        type: string
     steps:
       - run:
           name: Destroy environments
@@ -17,13 +18,16 @@ commands:
           command: |
             # Your code here
             echo "Destroy environments"
-            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID}
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID}
             exit 0
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
+      test:
+        type: string
+        default: '123'
       # Add parameter here     
     steps:
       - run:
@@ -201,7 +205,8 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      - destroy-environment
+      - destroy-environment:
+          CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
@@ -227,7 +232,8 @@ jobs:
             exit 0
       - aws-cli/setup:
           profile-name: default
-      - destroy-environment
+      - destroy-environment:
+          CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}
   #     # Here's where you will add some code to rollback on failure      
 
   run-migrations:
@@ -252,6 +258,10 @@ jobs:
             then
               curl https://kvdb.io/AB2eV6LxdQChzLbkwwqQDz/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
+      - aws-cli/setup:
+          profile-name: default
+      - destroy-environment:
+          CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-frontend:
     docker:
@@ -273,7 +283,7 @@ jobs:
             echo Install nvm 
             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
             # source ~/.bashrc
-            /bin/bash
+            # /bin/bash
             echo Install nodejs 13.8
             nvm install v13.8.0
             echo version
@@ -296,7 +306,9 @@ jobs:
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive            
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive 
+      - destroy-environment:
+          CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}      
   #     # Here's where you will add some code to rollback on failure      
 
                     
