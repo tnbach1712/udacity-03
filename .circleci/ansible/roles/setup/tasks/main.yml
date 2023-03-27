@@ -9,13 +9,6 @@
 #   apt:
 #     upgrade: yes
 
-- name: "install python for Ansible."
-  become: yes
-  apt:
-    name: ["python3", "pip"]
-    state: latest
-    update_cache: yes
-
 - name: Install nvm
   become: no
   ansible.builtin.shell: >
@@ -24,7 +17,22 @@
     executable: /bin/bash
     chdir: "$HOME"
     creates: "$HOME/.nvm/nvm.sh"
+- name: Print NVM version
+  become: no
+  ansible.builtin.shell: >
+    . $HOME/.nvm/nvm.sh && nvm --version
+  args:
+    executable: /bin/bash
+    chdir: $HOME
 
+
+- name: "install python for Ansible."
+  become: yes
+  apt:
+    name: ["python3", "pip"]
+    state: latest
+    update_cache: yes
+    
 - name: "install Node and Npm for Ansible."
   become: yes
   apt:
@@ -32,12 +40,6 @@
     state: latest
     update_cache: yes
 
-- name: Print NVM version
-  ansible.builtin.shell: >
-    . $HOME/.nvm/nvm.sh && nvm --version
-  args:
-    executable: /bin/bash
-    chdir: $HOME
 
 - name: Print NPM version
   ansible.builtin.shell: npm --version
