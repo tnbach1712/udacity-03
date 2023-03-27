@@ -272,7 +272,8 @@ jobs:
             # your code here
             echo Install nvm 
             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-            source ~/.bashrc
+            # source ~/.bashrc
+            /bin/bash
             echo Install nodejs 13.8
             nvm install v13.8.0
             echo version
