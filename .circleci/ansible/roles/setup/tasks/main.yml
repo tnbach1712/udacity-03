@@ -17,6 +17,7 @@
     executable: /bin/bash
     chdir: "$HOME"
     creates: "$HOME/.nvm/nvm.sh"
+    
 - name: Print NVM version
   become: no
   ansible.builtin.shell: >
@@ -32,7 +33,7 @@
     name: ["python3", "pip"]
     state: latest
     update_cache: yes
-    
+
 - name: "install Node and Npm for Ansible."
   become: yes
   apt:
@@ -59,6 +60,7 @@
     - 13.8
 
 - name: Print NPM version
+  become: no
   ansible.builtin.shell: >
     . $HOME/.nvm/nvm.sh && nvm ls && node -v
   args:
