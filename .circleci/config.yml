@@ -255,8 +255,8 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
-      # - image: amazon/aws-cli
+      # - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
     steps:
       - checkout
       - jq/install
@@ -266,13 +266,19 @@ jobs:
             yum install -y tar gzip
       - attach_workspace:
           at: /
-      - aws-cli/setup:
-          profile-name: default
       - run:
           name: Install dependencies
           command: |
             # your code here
-            echo 123
+            echo Install nvm 
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+            source ~/.bashrc
+            echo Install nodejs 13.8
+            nvm install v13.8.0
+            echo version
+            node -v
+            nvm -v
+            npm -v
       - run:
           name: Get backend url
           command: |
