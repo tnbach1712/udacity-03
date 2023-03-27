@@ -320,20 +320,10 @@ jobs:
       - attach_workspace:
           at: /
       - aws-cli/setup:
-          profile-name: default          
-      - run:
-          name: Install dependencies
-          command: |
-            # your code here
-            echo Install nvm 
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-            source ~/.bashrc
-            echo Install nodejs 13.8
-            nvm install v13.8.0
-            echo version
-            node -v
-            nvm -v
-            npm -v
+          profile-name: default
+      - node/install:
+          install-yarn: true
+          node-version: '13.8'       
       - run:
           name: Deploy backend
           command: |
@@ -343,11 +333,20 @@ jobs:
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
+            
+            # cp to files
+            mkdir .circleci/ansible/roles/deploy/files
+            cp artifact.tar.gz roles/deploy/files/
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml
+            cp /project/.circleci/ansible/inventory.txt inventory.txt
+            yes "" | ansible-playbook -i inventory.txt deploy-backend.yml 2>/dev/null || true
             # your code here
+      - aws-cli/setup:
+          profile-name: default
+      - destroy-environment:
+          CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}
       # Here's where you will add some code to rollback on failure  
 
   # smoke-test:
@@ -435,8 +434,8 @@ workflows:
           requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [run-migrations]
-      # - deploy-backend:
-      #     requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:

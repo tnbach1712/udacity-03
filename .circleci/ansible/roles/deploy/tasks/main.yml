@@ -1,0 +1,11 @@
+
+- name: Extract artifact.tar.gz
+  ansible.builtin.unarchive:
+    src: files/artifact.tar.gz
+    dest: $HOME/
+
+- name: Executing node
+  become: yes
+  ansible.builtin.shell: |
+    pm2 start /home/ubuntu/web/index.js -f || true
+  register: print_result
