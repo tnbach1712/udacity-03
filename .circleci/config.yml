@@ -223,7 +223,7 @@ jobs:
           command: |
             cd .circleci/ansible
             cp /project/.circleci/ansible/inventory.txt inventory.txt
-            yes | ansible-playbook -i inventory.txt configure-server.yml
+            yes "" | ansible-playbook -i inventory.txt configure-server.yml 2>/dev/null || true
             exit 0
       - aws-cli/setup:
           profile-name: default
