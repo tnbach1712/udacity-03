@@ -32,6 +32,9 @@
     state: latest
     update_cache: yes
 
+- name: Print version
+  shell: nvm --version
+  
 - name: Install node
   become: no
   shell: >
