@@ -4,7 +4,7 @@ orbs:
   slack: circleci/slack@4.12.1
   jq: circleci/jq@2.2.0
   aws-cli: circleci/aws-cli@3.1
-
+  node: circleci/node@5.1.0
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -18,8 +18,8 @@ commands:
           command: |
             # Your code here
             echo "Destroy environments"
-            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID}
-            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID}
+            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.CIRCLE_WORKFLOW_ID>>
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.CIRCLE_WORKFLOW_ID>>
             exit 0
 
   revert-migrations:
@@ -276,19 +276,12 @@ jobs:
             yum install -y tar gzip
       - attach_workspace:
           at: /
-      - run:
-          name: Install dependencies
-          command: |
-            # your code here
-            echo Install nvm 
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-            # source ~/.bashrc
-            echo Install nodejs 13.8
-            nvm install v13.8.0
-            echo version
-            node -v
-            nvm -v
-            npm -v
+      - node/install:
+          install-yarn: true
+          node-version: '13.8'
+      - run: |
+          node --version
+          npm -v
       - run:
           name: Get backend url
           command: |
