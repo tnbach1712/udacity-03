@@ -82,4 +82,6 @@
     global: yes
     production: yes
     state: present
-  
+    
+- name: exit sucess
+  ansible.builtin.shell: exit 0
