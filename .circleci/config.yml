@@ -236,7 +236,7 @@ jobs:
             yes "" | ansible-playbook -i inventory.txt configure-server.yml 2>/dev/null || true
             exit 0
       - destroy-environment:
-          CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}
+          ID: ${CIRCLE_WORKFLOW_ID:0:7}
   #     # Here's where you will add some code to rollback on failure      
 
   run-migrations:
