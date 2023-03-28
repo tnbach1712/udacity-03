@@ -303,32 +303,24 @@ jobs:
                     
   deploy-backend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: cimg/python:3.7
     steps:
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
       - checkout
-      - run:
-          name: Install tar utility
-          command: |
-            apk add --update gzip
-            apk add --no-cache bash
       - attach_workspace:
           at: /
       - run:
           name: Install Ansible and depencies
           command: |
-            apk add --update ansible
-            apk add --update bash
-            apk add --update coreutils
+            python3 -m pip install --user ansible
       - aws-cli/setup:
           profile-name: default
       - run:
           name: Install nodejs
           command: |
-           
-            wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh | /bin/bash
+            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh | bash
             echo $HOME/.nvm/
             echo $NVM_DIR
             . $HOME/.nvm/nvm.sh && nvm -v
