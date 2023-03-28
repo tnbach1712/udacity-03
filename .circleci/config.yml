@@ -317,32 +317,28 @@ jobs:
       - attach_workspace:
           at: /
       - run:
-          name: Install Ansible
+          name: Install Ansible and depencies
           command: |
             apk add --update ansible
-      - aws-cli/setup:
-          profile-name: default
-      # - node/install:
-      #     node-version: '13.8'
-      # - node/install-packages:
-      #     app-dir: backend
-      #     pkg-manager: npm
-      # - node/run:
-      #     npm-run: build
-      #     app-dir: backend
-      - run:
-          name: Deploy backend
-          command: |
             apk add --update bash
             apk add --update coreutils
+      - aws-cli/setup:
+          profile-name: default
+      - run:
+          name: Install nodejs
+          command: |
+           
             wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh | /bin/bash
             echo $HOME/.nvm/
             echo $NVM_DIR
             . $HOME/.nvm/nvm.sh && nvm -v
-            cd backend
             . $HOME/.nvm/nvm.sh && nvm install v13.8
             . $HOME/.nvm/nvm.sh && nvm ls
             . $HOME/.nvm/nvm.sh && nvm alias default 13.8 && nvm use 13.8
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
             npm -v
             npm i
             cd ..
