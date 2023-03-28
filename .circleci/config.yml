@@ -335,7 +335,8 @@ jobs:
           command: |
             apk add --update bash
             wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh | /bin/bash
-
+            echo $NVM_DIR
+            . $NVM_DIR/nvm.sh && nvm -v
             cd backend
             npm -v || true
             npm i
