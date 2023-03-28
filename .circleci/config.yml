@@ -340,6 +340,7 @@ jobs:
             . $HOME/.nvm/nvm.sh && nvm -v
             cd backend
             nvm install v13.8
+            nvm ls
             nvm alias default 13.8 && nvm use 13.8
             npm -v
             npm i
