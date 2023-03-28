@@ -289,7 +289,8 @@ jobs:
             # your code here
             STACKID=${CIRCLE_WORKFLOW_ID:0:7}
             Ec2PublicIP=$(aws ec2 describe-instances --filter Name=tag:Name,Values=backend-$STACKID | jq -r ".Reservations[0].Instances[0].PublicIpAddress")
-            export API_URL="http://${Ec2PublicIP}:3030" >> frontend/.env
+            export API_URL="http://${Ec2PublicIP}:3030"
+            echo API_URL=$API_URL >> frontend/.env
             echo "${API_URL}"
             cat frontend/.env
       - run:
