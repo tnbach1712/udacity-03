@@ -330,13 +330,17 @@ jobs:
       - aws-cli/setup:
           profile-name: default
       - node/install:
-          node-version: '13.8'    
+          node-version: '13.8'
+      - node/install-packages:
+          app-dir: backend
+      # - node/run:
+      #     npm-run: build
       - run:
           name: Deploy backend
           command: |
             cd backend
+            npm -v || true
             npm i
-            npm run build
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
