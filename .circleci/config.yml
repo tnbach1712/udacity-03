@@ -9,7 +9,7 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      CIRCLE_WORKFLOW_ID:
+      ID:
         type: string
     steps:
       - run:
@@ -18,8 +18,10 @@ commands:
           command: |
             # Your code here
             echo "Destroy environments"
-            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.CIRCLE_WORKFLOW_ID>>
-            aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.CIRCLE_WORKFLOW_ID>>
+            ID2=${CIRCLE_WORKFLOW_ID:0:7}
+            echo $ID2
+            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.ID>>
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.ID>>
             exit 0
 
   revert-migrations:
@@ -207,7 +209,7 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment:
-          CIRCLE_WORKFLOW_ID: << pipeline.id >>
+          ID: << pipeline.id >>
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
@@ -302,7 +304,7 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive 
       - destroy-environment:
-          CIRCLE_WORKFLOW_ID: << pipeline.id >>
+          ID: << pipeline.id >>
   #     # Here's where you will add some code to rollback on failure      
 
                     
@@ -349,7 +351,7 @@ jobs:
             yes "" | ansible-playbook -i inventory.txt deploy-backend.yml 2>/dev/null || true
             # your code here
       - destroy-environment:
-          CIRCLE_WORKFLOW_ID: << pipeline.id >>
+          ID: << pipeline.id >>
       # Here's where you will add some code to rollback on failure  
 
   # smoke-test:
