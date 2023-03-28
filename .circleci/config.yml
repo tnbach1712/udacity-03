@@ -187,6 +187,7 @@ jobs:
               --template-file .circleci/files/frontend.yml \
               --tags project=bachtn-udacity \
               --stack-name "udapeople-frontend-${STACKID}" \
+              --capabilities CAPABILITY_AUTO_EXPAND CAPABILITY_IAM CAPABILITY_NAMED_IAM \
               --parameter-overrides ID=${STACKID}
       - jq/install
       - run:
