@@ -388,7 +388,9 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            if curl "${API_URL}/api/status" | grep "ok"
+            echo $API_URL/api/status
+            echo $(curl $API_URL/api/status)
+            if curl $API_URL/api/status | grep "ok"
             then
               return 0
             else
@@ -407,8 +409,8 @@ jobs:
               return 1
             fi
             # your code here
-      # - destroy-environment
-      # - revert-migrations
+      - destroy-environment
+      - revert-migrations
       # Here's where you will add some code to rollback on failure  
 
   cloudfront-update:
