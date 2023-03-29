@@ -349,6 +349,7 @@ jobs:
             echo TYPEORM_PASSWORD=12345678 >> .env
             echo TYPEORM_DATABASE=udacity03 >> .env
             echo BACKEND_PORT=3000 >> .env
+            cd ..
 
       - run:
           name: Deploy backend
