@@ -62,7 +62,8 @@
 - name: Print NPM version
   become: no
   ansible.builtin.shell: >
-    . $HOME/.nvm/nvm.sh && nvm ls && node -v
+    . $HOME/.nvm/nvm.sh && nvm ls && node -v && echo $TYPEORM_PORT
+  register: print_result
   args:
     executable: /bin/bash
     chdir: $HOME
@@ -82,6 +83,8 @@
     global: yes
     production: yes
     state: present
-    
+
+- name: Debug Executing node
+    debug: "msg=The script's stdout was `{{ print_result.stdout }}`."
 - name: exit sucess
   ansible.builtin.shell: exit 0
