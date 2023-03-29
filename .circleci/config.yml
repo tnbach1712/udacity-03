@@ -229,7 +229,8 @@ jobs:
           command: |
             cd .circleci/ansible
             cp /project/.circleci/ansible/inventory.txt inventory.txt
-            yes "" | ansible-playbook -i inventory.txt configure-server.yml 2>/dev/null || true
+            # yes "" | ansible-playbook -i inventory.txt configure-server.yml 2>/dev/null || true
+            ansible-playbook -i inventory.txt configure-server.yml 
             exit 0
       - destroy-environment
   #     # Here's where you will add some code to rollback on failure      
@@ -369,7 +370,8 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             # cp ~/project/.circleci/ansible/inventory.txt inventory.txt
-            yes "" | ansible-playbook -i inventory.txt deploy-backend.yml 2>/dev/null || true
+            ansible-playbook -i inventory.txt deploy-backend.yml
+            # yes "" | ansible-playbook -i inventory.txt deploy-backend.yml 2>/dev/null || true
             # your code here
       - destroy-environment
       # Here's where you will add some code to rollback on failure  
