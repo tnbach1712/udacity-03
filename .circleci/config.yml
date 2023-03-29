@@ -24,24 +24,23 @@ commands:
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      test:
+      workflow_id:
         type: string
-        default: '123'
-      # Add parameter here     
+        default: "abc"  
     steps:
       - run:
-          name: Revert migrations
-          # Add when this will run
-          command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
-            if(( $SUCCESS==1 )); 
-            then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
-            fi
+        name: Revert migrations
+        when: on_fail
+        command: |
+          
+          SUCCESS=$(curl --insecure  https://kvdb.io/AB2eV6LxdQChzLbkwwqQDz/migration_${CIRCLE_WORKFLOW_ID:0:7})
+          # Logic for reverting the database state
+          if (( $SUCCESS == 1 ));
+          then
+            cd ~/project/backend
+            npm install
+            npm run migration:revert
+          fi  
 
   send_notify_to_slack:
     steps:
@@ -432,6 +431,7 @@ jobs:
               --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
       - destroy-environment
+      - revert-migrations
       # Here's where you will add some code to rollback on failure  
 
 cleanup:
