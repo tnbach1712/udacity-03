@@ -372,6 +372,7 @@ jobs:
       - image: alpine:3.14
     steps:
       - checkout
+      - jq/install
       - aws-cli/setup:
           profile-name: default
       - run:
