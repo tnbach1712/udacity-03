@@ -381,6 +381,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
+            STACKID=${CIRCLE_WORKFLOW_ID:0:7}
             Ec2PublicIP=$(aws ec2 describe-instances --filter Name=tag:Name,Values=backend-$STACKID | jq -r ".Reservations[0].Instances[0].PublicIpAddress")
             export API_URL="http://${Ec2PublicIP}:3030"
             echo "${API_URL}"
