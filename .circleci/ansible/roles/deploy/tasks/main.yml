@@ -7,5 +7,5 @@
 - name: Executing node
   become: yes
   ansible.builtin.shell: |
-    pm2 start /home/ubuntu/web/index.js -f || true
+    pm2 start npm -- start
   register: print_result
