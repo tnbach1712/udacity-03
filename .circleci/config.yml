@@ -322,6 +322,7 @@ jobs:
       - run:
           name: Install nodejs
           command: |
+            ls ~/
             curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh | bash
             echo $HOME/.nvm/
             echo $NVM_DIR
