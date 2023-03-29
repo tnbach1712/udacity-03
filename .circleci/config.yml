@@ -379,13 +379,6 @@ jobs:
           command: |
             yum install curl
       - run:
-          name: Get backend url
-          command: |
-            STACKID=${CIRCLE_WORKFLOW_ID:0:7}
-            Ec2PublicIP=$(aws ec2 describe-instances --filter Name=tag:Name,Values=backend-$STACKID | jq -r ".Reservations[0].Instances[0].PublicIpAddress")
-            export API_URL="http://${Ec2PublicIP}:3030"
-            echo "${API_URL}"
-      - run:
           name: Backend smoke test.
           command: |
             STACKID=${CIRCLE_WORKFLOW_ID:0:7}
@@ -407,7 +400,7 @@ jobs:
             if curl -s ${URL} | grep "Welcome"
             then
               # Change this to 0 after the job fails
-              exit 1
+              exit 0
             else
               exit 1
             fi
