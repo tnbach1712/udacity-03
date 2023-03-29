@@ -28,6 +28,7 @@ commands:
         name: Revert migrations
         when: on_fail
         command: |
+          
           SUCCESS=$(curl --insecure  https://kvdb.io/AB2eV6LxdQChzLbkwwqQDz/migration_${CIRCLE_WORKFLOW_ID:0:7})
           # Logic for reverting the database state
           if (( $SUCCESS == 1 ));
@@ -406,7 +407,6 @@ jobs:
             fi
             # your code here
       - destroy-environment
-      - revert-migrations
       # Here's where you will add some code to rollback on failure  
 
   cloudfront-update:
