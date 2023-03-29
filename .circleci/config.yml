@@ -388,6 +388,8 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
+            Ec2PublicIP=$(aws ec2 describe-instances --filter Name=tag:Name,Values=backend-$STACKID | jq -r ".Reservations[0].Instances[0].PublicIpAddress")
+            export API_URL="http://${Ec2PublicIP}:3030"
             echo $API_URL/api/status
             echo $(curl $API_URL/api/status)
             if curl $API_URL/api/status | grep "ok"
