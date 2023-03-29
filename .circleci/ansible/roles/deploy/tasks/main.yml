@@ -15,4 +15,5 @@
   register: print_result
 
 - name: Debug Executing node
-  debug: "msg=The script's stdout was `{{ print_result.stdout }}`."
+  debug:
+    msg: "{{ print_result.stdout_lines }}"
