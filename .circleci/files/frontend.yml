@@ -8,6 +8,8 @@ Parameters:
 
 Resources:
   WebsiteBucket:
+    DependsOn:
+      - S3CustomResource
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "udapeople-${ID}"
