@@ -277,7 +277,7 @@ jobs:
           install-yarn: true
           node-version: '13.8'
       - run:
-          name: name: Check version
+          name: Check version
           command: |
             node --version
             npm -v
