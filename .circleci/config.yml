@@ -369,16 +369,15 @@ jobs:
 
   smoke-test:
     docker:
-      - image: alpine:3.14
+      - image: amazon/aws-cli
+      # - image: alpine:3.14
     steps:
       - checkout
       - jq/install
-      - aws-cli/setup:
-          profile-name: default
       - run:
           name: Install dependencies
           command: |
-            apk add --update curl
+            yum install curl
       - run:
           name: Get backend url
           command: |
