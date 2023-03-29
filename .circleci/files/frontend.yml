@@ -78,7 +78,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Description: "Empty an S3 bucket!"
-      FunctionName: !Sub 'empty-bucket-lambda'
+      FunctionName: !Sub 'empty-bucket-lambda-${ID}'
       Handler: index.handler
       Role: !GetAtt AWSLambdaExecutionRole.Arn
       Timeout: 360
