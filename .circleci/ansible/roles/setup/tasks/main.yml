@@ -85,7 +85,7 @@
     state: present
 
 - name: Debug Executing node
-    debug: "msg=The script's stdout was {{ print_result.stdout }}."
+    debug: "msg=The scripts stdout was {{ print_result.stdout }}."
 
 - name: exit sucess
   ansible.builtin.shell: exit 0
