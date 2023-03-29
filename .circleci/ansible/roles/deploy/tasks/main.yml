@@ -17,7 +17,9 @@
     - TYPEORM_MIGRATIONS: "{{ lookup('env', 'TYPEORM_MIGRATIONS')}}"
     - TYPEORM_MIGRATIONS_DIR: "{{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}"
   ansible.builtin.shell: |
-    echo $TYPEORM_CONNECTION2
+
+    echo $TYPEORM_CONNECTION2 >> text.txt
+    echo $TYPEORM_PORT >> text.txt
     npm install
     pm2 stop default  
     pm2 start npm -- start
