@@ -329,6 +329,8 @@ jobs:
             . $HOME/.nvm/nvm.sh && nvm install v13.8
             . $HOME/.nvm/nvm.sh && nvm ls
             . $HOME/.nvm/nvm.sh && nvm alias default 13.8 && nvm use 13.8
+            node -v
+            npm -v 
       - run:
           name: Deploy backend
           command: |
