@@ -65,6 +65,3 @@ Before you submit your project, please check your work against the project rubri
 
 
 
-# URL
-URL1: https://github.com/tnbach1712/cdond-c3-projectstarter/
-URL2: http://udapeople-05525db.s3-website-us-east-1.amazonaws.com/
