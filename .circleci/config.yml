@@ -272,7 +272,7 @@ jobs:
           command: |
             yum install -y tar gzip
       - attach_workspace:
-          at: /
+          at: ~/
       - node/install:
           install-yarn: true
           node-version: '13.8'
